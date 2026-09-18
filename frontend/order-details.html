@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details - FoodGo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f7f7;
+      color: #222;
+    }
+
+    header {
+      height: 105px;
+      background: #ff5a1f;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8%;
+    }
+
+    .logo {
+      font-size: 34px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    nav {
+      display: flex;
+      gap: 45px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 55px auto;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .title h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .title p {
+      color: #777;
+      font-size: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 35px;
+      margin-bottom: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 25px;
+      margin-bottom: 25px;
+    }
+
+    .order-header h2 {
+      font-size: 30px;
+    }
+
+    .status {
+      background: #fff0c7;
+      color: #8a6500;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .info-box {
+      background: #fafafa;
+      padding: 22px;
+      border-radius: 15px;
+    }
+
+    .info-box h4 {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .info-box p {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .section-title {
+      font-size: 25px;
+      margin-bottom: 20px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .item-name {
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .item-desc {
+      color: #888;
+      margin-top: 5px;
+    }
+
+    .item-right {
+      text-align: right;
+    }
+
+    .quantity {
+      color: #777;
+      margin-bottom: 5px;
+    }
+
+    .price {
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .total-section {
+      border-top: 1px solid #eee;
+      margin-top: 15px;
+      padding-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .total-label {
+      font-size: 20px;
+      color: #777;
+    }
+
+    .total {
+      color: #ff5a1f;
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .back-btn {
+      display: block;
+      width: fit-content;
+      margin: 35px auto;
+      background: #ff5a1f;
+      color: white;
+      text-decoration: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 22px;
+      padding: 50px;
+      color: #777;
+    }
+
+    .error {
+      background: #ffe5e5;
+      color: #c00000;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 0 5%;
+      }
+
+      .logo {
+        font-size: 26px;
+      }
+
+      nav {
+        gap: 18px;
+      }
+
+      nav a {
+        font-size: 17px;
+      }
+
+      .title h1 {
+        font-size: 36px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+      .order-header {
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .item {
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo" onclick="goHome()">🍔 FoodGo</div>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/cart.html">Cart</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <div class="title">
+    <h1>Order Details</h1>
+    <p>View your complete FoodGo order information</p>
+  </div>
+
+  <div id="content">
+    <div class="loading">Loading order details...</div>
+  </div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const orderId =
+  params.get("order_id") ||
+  params.get("id");
+
+const content =
+  document.getElementById("content");
+
+
+function goHome() {
+  window.location.href = "/";
+}
+
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function formatPrice(price) {
+
+  return "¥" +
+    Number(price || 0).toLocaleString("ja-JP");
+
+}
+
+
+function formatDate(date) {
+
+  if (!date) {
+    return "Not available";
+  }
+
+  const d = new Date(date);
+
+  if (isNaN(d.getTime())) {
+    return escapeHtml(date);
+  }
+
+  return d.toLocaleString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+}
+
+
+async function getData(url) {
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Failed to load " + url);
+  }
+
+  return await response.json();
+
+}
+
+
+async function loadOrderDetails() {
+
+  if (!orderId) {
+
+    content.innerHTML = `
+      <div class="error">
+        Order ID is missing.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  try {
+
+    const [
+      orders,
+      orderItems,
+      restaurants,
+      foods,
+      addresses,
+      payments
+    ] = await Promise.all([
+
+      getData("/orders"),
+
+      getData("/order-items"),
+
+      getData("/restaurants"),
+
+      getData("/foods"),
+
+      getData("/addresses"),
+
+      getData("/payments")
+
+    ]);
+
+
+    /* =========================
+       FIND ORDER
+    ========================= */
+
+    const order = orders.find(
+      item =>
+        Number(item.id) === Number(orderId)
+    );
+
+
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+
+    /* =========================
+       FIND RESTAURANT
+    ========================= */
+
+    const restaurant =
+      restaurants.find(
+        item =>
+          Number(item.id) ===
+          Number(order.restaurant_id)
+      );
+
+
+    /* =========================
+       FIND ORDER ITEMS
+    ========================= */
+
+    const items =
+      orderItems.filter(
+        item =>
+          Number(item.order_id) ===
+          Number(order.id)
+      );
+
+
+    /* =========================
+       FIND ADDRESS
+       Current Addresses table
+       uses user_id
+    ========================= */
+
+    const userAddresses =
+      addresses.filter(
+        item =>
+          Number(item.user_id) ===
+          Number(order.user_id)
+      );
+
+
+    let address = null;
+
+    if (userAddresses.length > 0) {
+
+      address =
+        userAddresses[
+          userAddresses.length - 1
+        ];
+
+    }
+
+
+    /* =========================
+       FIND PAYMENT
+    ========================= */
+
+    const payment =
+      payments.find(
+        item =>
+          Number(item.order_id) ===
+          Number(order.id)
+      );
+
+
+    /* =========================
+       ORDER ITEMS HTML
+    ========================= */
+
+    let itemsHTML = "";
+
+
+    if (items.length === 0) {
+
+      itemsHTML = `
+        <p style="color:#777;">
+          No order items found.
+        </p>
+      `;
+
+    } else {
+
+      itemsHTML =
+        items.map(item => {
+
+          /*
+            IMPORTANT:
+
+            OrderItems table has:
+            menu_id
+
+            Foods table has:
+            id
+
+            Therefore:
+            item.menu_id -> food.id
+          */
+
+          const food =
+            foods.find(
+              f =>
+                Number(f.id) ===
+                Number(item.menu_id)
+            );
+
+
+          const foodName =
+            food?.name ||
+            "Food Item";
+
+
+          const foodDescription =
+            food?.description ||
+            "";
+
+
+          const quantity =
+            Number(item.quantity || 1);
+
+
+          const price =
+            Number(item.price || 0);
+
+
+          const itemTotal =
+            price * quantity;
+
+
+          return `
+            <div class="item">
+
+              <div>
+
+                <div class="item-name">
+                  ${escapeHtml(foodName)}
+                </div>
+
+                <div class="item-desc">
+                  ${
+                    foodDescription
+                      ? escapeHtml(foodDescription)
+                      : formatPrice(price) +
+                        " × " +
+                        quantity
+                  }
+                </div>
+
+              </div>
+
+
+              <div class="item-right">
+
+                <div class="quantity">
+                  Qty: ${quantity}
+                </div>
+
+                <div class="price">
+                  ${formatPrice(itemTotal)}
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+        }).join("");
+
+    }
+
+
+    /* =========================
+       RESTAURANT NAME
+    ========================= */
+
+    const restaurantName =
+      restaurant?.name ||
+      "FoodGo Restaurant";
+
+
+    /* =========================
+       ADDRESS
+    ========================= */
+
+    let addressText =
+      "Address not available";
+
+
+    if (address) {
+
+      const parts = [
+
+        address.address_line,
+
+        address.address,
+
+        address.street,
+
+        address.city,
+
+        address.postal_code,
+
+        address.zip_code
+
+      ].filter(Boolean);
+
+
+      if (parts.length > 0) {
+
+        addressText =
+          parts.join(", ");
+
+      }
+
+    }
+
+
+    /* =========================
+       PAYMENT
+    ========================= */
+
+    const paymentMethod =
+      payment?.method ||
+      "Not specified";
+
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    const status =
+      order.status ||
+      "Pending";
+
+
+    /* =========================
+       TOTAL
+    ========================= */
+
+    const total =
+      Number(
+        order.total_amount ??
+        order.total ??
+        0
+      );
+
+
+    /* =========================
+       DISPLAY PAGE
+    ========================= */
+
+    content.innerHTML = `
+
+      <div class="card">
+
+        <div class="order-header">
+
+          <div>
+
+            <h2>
+              Order #${escapeHtml(order.id)}
+            </h2>
+
+            <p style="
+              color:#777;
+              margin-top:8px;
+              font-size:17px;
+            ">
+
+              ${formatDate(
+                order.created_at ||
+                order.order_date ||
+                order.createdAt
+              )}
+
+            </p>
+
+          </div>
+
+
+          <div class="status">
+            ${escapeHtml(status)}
+          </div>
+
+        </div>
+
+
+        <div class="info-grid">
+
+
+          <div class="info-box">
+
+            <h4>
+              Restaurant
+            </h4>
+
+            <p>
+              ${escapeHtml(restaurantName)}
+            </p>
+
+          </div>
+
+
+          <div class="info-box">
+
+            <h4>
+              Payment
+            </h4>
+
+            <p>
+              ${escapeHtml(paymentMethod)}
+            </p>
+
+          </div>
+
+
+          <div class="info-box">
+
+            <h4>
+              Delivery Address
+            </h4>
+
+            <p>
+              ${escapeHtml(addressText)}
+            </p>
+
+          </div>
+
+
+          <div class="info-box">
+
+            <h4>
+              Order ID
+            </h4>
+
+            <p>
+              #${escapeHtml(order.id)}
+            </p>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2 class="section-title">
+          Order Items
+        </h2>
+
+
+        ${itemsHTML}
+
+
+        <div class="total-section">
+
+          <div class="total-label">
+            Total Amount
+          </div>
+
+          <div class="total">
+            ${formatPrice(total)}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <a
+        href="/orders.html"
+        class="back-btn"
+      >
+        ← Back to My Orders
+      </a>
+
+    `;
+
+
+  } catch (error) {
+
+    console.error(
+      "Order details error:",
+      error
+    );
+
+
+    content.innerHTML = `
+
+      <div class="error">
+
+        Failed to load order details.
+
+        <br><br>
+
+        ${escapeHtml(error.message)}
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+loadOrderDetails();
+
+</script>
+
+</body>
+</html>

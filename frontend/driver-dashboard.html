@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>FoodGo - Driver Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    header {
+      background: #ff6b00;
+      color: white;
+      padding: 18px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 25px;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 20px;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1200px;
+      margin: 30px auto;
+    }
+
+    .welcome {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .welcome h2 {
+      margin-bottom: 10px;
+      color: #ff6b00;
+    }
+
+    .driver-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .info-card {
+      background: #fff7f0;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid #ffe0c7;
+    }
+
+    .info-card h4 {
+      color: #777;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info-card p {
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .section-title {
+      margin: 25px 0 15px;
+      font-size: 24px;
+    }
+
+    .delivery-card {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .delivery-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .delivery-header h3 {
+      color: #ff6b00;
+    }
+
+    .status {
+      padding: 8px 14px;
+      border-radius: 20px;
+      background: #fff0e5;
+      color: #ff6b00;
+      font-weight: bold;
+    }
+
+    .delivery-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .detail {
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 10px;
+    }
+
+    .detail strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .detail span {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    select {
+      padding: 11px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      min-width: 190px;
+      background: white;
+    }
+
+    button {
+      border: none;
+      padding: 11px 20px;
+      border-radius: 8px;
+      background: #ff6b00;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e85d00;
+    }
+
+    .empty {
+      background: white;
+      padding: 40px;
+      text-align: center;
+      border-radius: 15px;
+      color: #777;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+    }
+
+    .error {
+      background: #ffe8e8;
+      color: #c00;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 15px;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
+
+      header a {
+        margin-left: 10px;
+        font-size: 14px;
+      }
+
+      .container {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🚗 FoodGo Driver</h1>
+
+    <div>
+      <a href="/">Home</a>
+      <a href="/admin.html">Admin</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div id="errorBox"></div>
+
+    <div id="driverSection">
+      <div class="loading">
+        Loading driver information...
+      </div>
+    </div>
+
+    <h2 class="section-title">📦 My Deliveries</h2>
+
+    <div id="deliveries">
+      <div class="loading">
+        Loading deliveries...
+      </div>
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const API = "";
+
+    const params = new URLSearchParams(window.location.search);
+
+    // Default driver ID = 1
+    const driverId = Number(params.get("driver_id")) || 1;
+
+
+    async function getData(url) {
+
+      const response = await fetch(API + url);
+
+      if (!response.ok) {
+        throw new Error("Failed to load " + url);
+      }
+
+      return await response.json();
+    }
+
+
+    function escapeHTML(value) {
+
+      if (value === null || value === undefined) {
+        return "";
+      }
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    async function loadDashboard() {
+
+      try {
+
+        const [
+          drivers,
+          deliveries,
+          orders,
+          restaurants
+        ] = await Promise.all([
+          getData("/delivery-drivers"),
+          getData("/deliveries"),
+          getData("/orders"),
+          getData("/restaurants")
+        ]);
+
+
+        // -------------------------
+        // DRIVER
+        // -------------------------
+
+        const driver = drivers.find(
+          d => Number(d.id) === driverId
+        );
+
+
+        if (!driver) {
+
+          document.getElementById("driverSection").innerHTML = `
+            <div class="error">
+              Driver #${driverId} not found.
+            </div>
+          `;
+
+          return;
+        }
+
+
+        document.getElementById("driverSection").innerHTML = `
+
+          <div class="welcome">
+
+            <h2>
+              Welcome, ${escapeHTML(driver.name)} 👋
+            </h2>
+
+            <p>
+              Manage your assigned FoodGo deliveries from here.
+            </p>
+
+
+            <div class="driver-info">
+
+              <div class="info-card">
+                <h4>Driver ID</h4>
+                <p>#${driver.id}</p>
+              </div>
+
+              <div class="info-card">
+                <h4>Name</h4>
+                <p>${escapeHTML(driver.name)}</p>
+              </div>
+
+              <div class="info-card">
+                <h4>Phone</h4>
+                <p>${escapeHTML(driver.phone || "N/A")}</p>
+              </div>
+
+              <div class="info-card">
+                <h4>Vehicle</h4>
+                <p>${escapeHTML(driver.vehicle || "N/A")}</p>
+              </div>
+
+              <div class="info-card">
+                <h4>Vehicle Number</h4>
+                <p>${escapeHTML(driver.vehicle_number || driver.vehicle_no || "N/A")}</p>
+              </div>
+
+              <div class="info-card">
+                <h4>Driver Status</h4>
+                <p>${escapeHTML(driver.status || "Available")}</p>
+              </div>
+
+            </div>
+
+          </div>
+        `;
+
+
+        // -------------------------
+        // MY DELIVERIES
+        // -------------------------
+
+        const myDeliveries = deliveries
+          .filter(
+            d => Number(d.driver_id) === driverId
+          )
+          .sort(
+            (a, b) => Number(b.id) - Number(a.id)
+          );
+
+
+        const container =
+          document.getElementById("deliveries");
+
+
+        if (myDeliveries.length === 0) {
+
+          container.innerHTML = `
+            <div class="empty">
+              <h3>📦 No deliveries assigned</h3>
+              <p>There are currently no deliveries for you.</p>
+            </div>
+          `;
+
+          return;
+        }
+
+
+        let html = "";
+
+
+        myDeliveries.forEach(delivery => {
+
+          const order = orders.find(
+            o => Number(o.id) === Number(delivery.order_id)
+          );
+
+
+          const restaurant = order
+            ? restaurants.find(
+                r => Number(r.id) === Number(order.restaurant_id)
+              )
+            : null;
+
+
+          html += `
+
+            <div class="delivery-card">
+
+              <div class="delivery-header">
+
+                <h3>
+                  🚚 Delivery #${delivery.id}
+                </h3>
+
+                <div class="status">
+                  ${escapeHTML(delivery.status || "Assigned")}
+                </div>
+
+              </div>
+
+
+              <div class="delivery-details">
+
+                <div class="detail">
+                  <strong>Order ID</strong>
+                  <span>
+                    #${delivery.order_id}
+                  </span>
+                </div>
+
+
+                <div class="detail">
+                  <strong>Restaurant</strong>
+                  <span>
+                    ${escapeHTML(
+                      restaurant?.name || "Unknown Restaurant"
+                    )}
+                  </span>
+                </div>
+
+
+                <div class="detail">
+                  <strong>Order Total</strong>
+                  <span>
+                    ¥${Number(order?.total || 0).toLocaleString()}
+                  </span>
+                </div>
+
+
+                <div class="detail">
+                  <strong>Current Status</strong>
+                  <span>
+                    ${escapeHTML(delivery.status || "Assigned")}
+                  </span>
+                </div>
+
+
+                <div class="detail">
+                  <strong>Pickup Time</strong>
+                  <span>
+                    ${escapeHTML(
+                      delivery.pickup_time || "Not picked up"
+                    )}
+                  </span>
+                </div>
+
+              </div>
+
+
+              <div class="actions">
+
+                <select
+                  id="status-${delivery.id}"
+                >
+
+                  <option value="Assigned"
+                    ${delivery.status === "Assigned" ? "selected" : ""}>
+                    Assigned
+                  </option>
+
+                  <option value="Picked Up"
+                    ${delivery.status === "Picked Up" ? "selected" : ""}>
+                    Picked Up
+                  </option>
+
+                  <option value="Out for Delivery"
+                    ${delivery.status === "Out for Delivery" ? "selected" : ""}>
+                    Out for Delivery
+                  </option>
+
+                  <option value="Delivered"
+                    ${delivery.status === "Delivered" ? "selected" : ""}>
+                    Delivered
+                  </option>
+
+                  <option value="Cancelled"
+                    ${delivery.status === "Cancelled" ? "selected" : ""}>
+                    Cancelled
+                  </option>
+
+                </select>
+
+
+                <button
+                  onclick="updateDeliveryStatus(${delivery.id})"
+                >
+                  Update Status
+                </button>
+
+              </div>
+
+            </div>
+
+          `;
+
+        });
+
+
+        container.innerHTML = html;
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        document.getElementById("errorBox").innerHTML = `
+          <div class="error">
+            Failed to load Driver Dashboard.
+            Please make sure the FoodGo server is running.
+          </div>
+        `;
+
+        document.getElementById("deliveries").innerHTML = "";
+
+      }
+
+    }
+
+
+    // -------------------------
+    // UPDATE DELIVERY STATUS
+    // -------------------------
+
+    async function updateDeliveryStatus(deliveryId) {
+
+      const select =
+        document.getElementById(
+          "status-" + deliveryId
+        );
+
+
+      const status = select.value;
+
+
+      try {
+
+        const response = await fetch(
+          API + "/deliveries/" + deliveryId + "/status",
+          {
+            method: "PATCH",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              status: status
+            })
+          }
+        );
+
+
+        const result =
+          await response.text();
+
+
+        if (!response.ok) {
+
+          alert(
+            "❌ Update failed:\n" + result
+          );
+
+          return;
+        }
+
+
+        alert(
+          "✅ Delivery #" +
+          deliveryId +
+          " updated to " +
+          status
+        );
+
+
+        // Reload dashboard
+        loadDashboard();
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        alert(
+          "❌ Server connection failed."
+        );
+
+      }
+
+    }
+
+
+    // -------------------------
+    // START
+    // -------------------------
+
+    loadDashboard();
+
+  </script>
+
+</body>
+</html>
