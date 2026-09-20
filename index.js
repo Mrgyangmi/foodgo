@@ -1,7 +1,50 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const express = require("express");
 const db = require("./db");
 
 const app = express();
+const cors = require("cors");
+app.use(cors());
 
 app.use(express.json());
 app.use(express.static(__dirname + "/frontend"));
@@ -63,7 +106,7 @@ app.get("/restaurants", (req, res) => {
   db.query("SELECT * FROM Restaurants", (err, results) => {
     if (err) {
       console.log("Restaurant query failed:", err);
-      return res.status(500).send("Restaurant query failed");
+      return res.status(500).send("Restaurant query failed: " + err.message);
     }
 
     res.json(results);
